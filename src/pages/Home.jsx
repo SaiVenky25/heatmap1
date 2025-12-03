@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
 
 export default function Home() {
+  // Use local images placed in /public (cow.jpg, dog.jpg). Keep the existing cat image.
+  const images = useMemo(() => ([
+    { url: "/cow.jpg", alt: "Cow on street" },
+    { url: "/dog.jpg", alt: "Dog on street" },
+    { url: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=1600&auto=format&fit=crop", alt: "Cat" },
+  ]), []);
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIdx((i) => (i + 1) % images.length);
+    }, 4000); // change every 4 seconds
+    return () => clearInterval(id);
+  }, [images.length]);
   return (
     <div className="home">
       <div className="hero">
@@ -11,29 +25,26 @@ export default function Home() {
         <p className="hero-subtitle">
           Report injured or distressed animals. Verified NGOs respond. Together we make streets safer.
         </p>
-        <div className="hero-cta">
-          <Link className="btn primary" to="/login">Get Started</Link>
-          <Link className="btn" to="/report">Report an Animal</Link>
+        <div className="hero-cta" style={{ flexDirection: "column" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Link className="btn primary" to="/login">Get Started</Link>
+          </div>
         </div>
-        <div className="hero-stats">
-          <div className="stat"><span>120+</span> Reports this month</div>
-          <div className="stat"><span>35</span> Verified NGOs</div>
-          <div className="stat"><span>92%</span> Resolved cases</div>
-        </div>
+        {/* Stats removed per request */}
       </div>
 
       <section className="features">
         <div className="feature-card">
-          <h3>Easy Reporting</h3>
-          <p>Upload a photo, add time and address. We’ll notify nearby NGOs.</p>
+          <h3>1. Report a stray</h3>
+          <p>Share basic details, time and location. Add a photo if available.</p>
         </div>
         <div className="feature-card">
-          <h3>Verified NGOs</h3>
-          <p>Access for government-verified NGOs. Admins manage approvals.</p>
+          <h3>2. We verify & notify</h3>
+          <p>Reports are reviewed and alerts go to relevant responders.</p>
         </div>
         <div className="feature-card">
-          <h3>Trust & Safety</h3>
-          <p>Built‑in AI check flags likely fake photos for review.</p>
+          <h3>3. Get updates</h3>
+          <p>Track progress as responders accept and resolve the case.</p>
         </div>
       </section>
     </div>

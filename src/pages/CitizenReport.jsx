@@ -14,6 +14,8 @@ export default function CitizenReport() {
     address: "",
     photo: null,
     photoPreview: "",
+    lat: "",
+    lng: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
@@ -43,10 +45,12 @@ export default function CitizenReport() {
         aiVerdict: ai,
         status: "new",
         createdAt: Date.now(),
+        lat: form.lat ? Number(form.lat) : undefined,
+        lng: form.lng ? Number(form.lng) : undefined,
       };
       await saveReport(payload);
       setResult({ ok: true, id: payload.id, ai });
-      setForm({ animalType: "", condition: "", time: new Date().toISOString().slice(0, 16), address: "", photo: null, photoPreview: "" });
+      setForm({ animalType: "", condition: "", time: new Date().toISOString().slice(0, 16), address: "", photo: null, photoPreview: "", lat: "", lng: "" });
     } catch (err) {
       setResult({ ok: false, error: String(err) });
     } finally {
@@ -55,7 +59,7 @@ export default function CitizenReport() {
   };
 
   return (
-    <div className="page">
+    <div className="page fullscreen">
       <h2>Report an Animal</h2>
       <form className="card form" onSubmit={onSubmit}>
         <div className="grid">
@@ -93,6 +97,28 @@ export default function CitizenReport() {
             <input placeholder="Street, Area, City" value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} />
           </label>
 
+          <label>
+            Latitude
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 12.9716"
+              value={form.lat}
+              onChange={(e) => setForm((f) => ({ ...f, lat: e.target.value }))}
+            />
+          </label>
+
+          <label>
+            Longitude
+            <input
+              type="number"
+              step="any"
+              placeholder="e.g. 77.5946"
+              value={form.lng}
+              onChange={(e) => setForm((f) => ({ ...f, lng: e.target.value }))}
+            />
+          </label>
+
           <label className="full">
             Photo
             <input type="file" accept="image/*" onChange={onPhoto} />
@@ -107,6 +133,26 @@ export default function CitizenReport() {
 
         <button className="btn primary" type="submit" disabled={submitting}>
           {submitting ? "Submitting..." : "Submit Report"}
+        </button>
+        <button
+          className="btn"
+          type="button"
+          onClick={() => {
+            if (!navigator.geolocation) return alert("Geolocation not supported by your browser.");
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                const { latitude, longitude } = pos.coords;
+                setForm((f) => ({ ...f, lat: String(latitude), lng: String(longitude) }));
+              },
+              (err) => {
+                alert("Unable to fetch location: " + err.message);
+              },
+              { enableHighAccuracy: true, timeout: 10000 }
+            );
+          }}
+          style={{ marginLeft: 12 }}
+        >
+          Use my location
         </button>
       </form>
 
