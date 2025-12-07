@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import CitizenReport from "./pages/CitizenReport";
 import NGODashboard from "./pages/NGODashboard";
 import MapView from "./pages/MapView";
+import ReportHistory from "./pages/ReportHistory";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "./App.css";
 
@@ -24,6 +25,7 @@ export default function App() {
         <Link to="/">Home</Link>
         {role === "citizen" && <Link to="/report">Report</Link>}
         {(role === "ngo" || role === "admin") && <Link to="/ngo">NGO</Link>}
+        {(role === "ngo" || role === "admin") && <Link to="/history">History</Link>}
         {!user && <Link to="/login">Login</Link>}
       </div>
     );
@@ -52,6 +54,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={["ngo", "admin"]}>
                 <NGODashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute roles={["ngo", "admin"]}>
+                <ReportHistory />
               </ProtectedRoute>
             }
           />
